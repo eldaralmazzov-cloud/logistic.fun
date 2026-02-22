@@ -61,7 +61,7 @@ class Product(Base):
     # Logistics Fields
     weight_kg = Column(Float)
     volume_m3 = Column(Float)
-    quantity = Column(Integer)
+    quantity = Column(Integer, nullable=False, default=0)
     warehouse_location = Column(String)
     tracking_number = Column(String, index=True)
     shipping_method = Column(Enum(ShippingMethod))
@@ -70,6 +70,13 @@ class Product(Base):
     estimated_arrival_date = Column(DateTime, nullable=True)
     actual_arrival_date = Column(DateTime, nullable=True)
     logistics_notes = Column(Text, nullable=True)
+    
+    # New Fields
+    media_urls = Column(JSON, nullable=True)
+    characteristics = Column(Text, nullable=True)
+    price = Column(Float, nullable=False)
+    weight = Column(Float, nullable=True)
+    size = Column(String(100), nullable=True)
     
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

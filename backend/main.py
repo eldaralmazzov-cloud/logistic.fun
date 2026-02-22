@@ -2,16 +2,26 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import engine, Base, SessionLocal
 import models, auth
-from routers import auth as auth_router, products as products_router, settings as settings_router
+from routers import auth as auth_router, products as products_router, settings as settings_router, upload as upload_router
 
 # Create tables
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="Logistics Management System")
+app = FastAPI(
+    title="Logistics Management System",
+    description="API for managing logistics products, orders, and media uploads.",
+    version="1.0.0",
+)
+
+ALLOWED_ORIGINS = [
+    "https://logistic-fun.netlify.app",   # production Netlify frontend
+    "http://localhost:5173",              # local Vite dev
+    "http://localhost:3000",              # fallback local
+]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -21,6 +31,7 @@ app.add_middleware(
 app.include_router(auth_router.router)
 app.include_router(products_router.router)
 app.include_router(settings_router.router)
+app.include_router(upload_router.router)
 
 @app.on_event("startup")
 def startup_event():
