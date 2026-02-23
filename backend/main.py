@@ -66,7 +66,9 @@ def startup_event():
         {"key": "customs_percent", "value": 15.0, "description": "Customs cost as % of product value (e.g. 15)"},
         {"key": "delivery_rate_kg", "value": 1.5, "description": "Delivery cost per kg (USD)"},
         {"key": "delivery_rate_m3", "value": 350.0, "description": "Delivery cost per m3 (USD)"},
-        {"key": "company_margin_percent", "value": 10.0, "description": "Standard company margin %"}
+        {"key": "company_margin_percent", "value": 10.0, "description": "Standard company margin %"},
+        {"key": "cny_to_kgs", "value": 12.5, "description": "Exchange rate CNY to KGS"},
+        {"key": "usd_to_kgs", "value": 89.0, "description": "Exchange rate USD to KGS"}
     ]
     
     for s_data in default_settings:

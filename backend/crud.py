@@ -49,13 +49,48 @@ def calculate_costs(product_data: dict, settings: dict):
         "outstanding_balance": final_total # Initially balance is full cost
     }
 
+def calculate_kgs_costs(product_data: dict, settings: dict):
+    # Get rates from settings with defaults
+    cny_to_kgs = float(settings.get("cny_to_kgs", 12.5))
+    usd_to_kgs = float(settings.get("usd_to_kgs", 89.0))
+    
+    price_cny = float(product_data.get("price_cny", 0.0))
+    weight_kg = float(product_data.get("weight_kg", 0.0))
+    delivery_usd_per_kg = float(product_data.get("delivery_usd_per_kg", 0.0))
+    
+    # 1. Product price in KGS
+    price_kgs = price_cny * cny_to_kgs
+    
+    # 2. Shipping cost in KGS
+    shipping_usd = delivery_usd_per_kg * weight_kg
+    shipping_kgs = shipping_usd * usd_to_kgs
+    
+    # 3. Total
+    total_cost_som = price_kgs + shipping_kgs
+    
+    print(f"--- KGS CALCULATION LOG ---")
+    print(f"Product: {product_data.get('product_name', 'Unnamed')}")
+    print(f"Rates: CNY/KGS={cny_to_kgs}, USD/KGS={usd_to_kgs}")
+    print(f"1. Price Conversion: {price_cny} CNY * {cny_to_kgs} = {price_kgs} KGS")
+    print(f"2. Shipping Calc: {delivery_usd_per_kg} USD/kg * {weight_kg} kg = {shipping_usd} USD")
+    print(f"3. Shipping Conversion: {shipping_usd} USD * {usd_to_kgs} = {shipping_kgs} KGS")
+    print(f"TOTAL COST: {total_cost_som} SOM")
+    print(f"---------------------------")
+    
+    return total_cost_som
+
 def create_product(db: Session, product: schemas.ProductCreate, user_id: int):
     settings = get_settings(db)
     calc_results = calculate_costs(product.dict(), settings)
+    kgs_total = calculate_kgs_costs(product.dict(), settings)
+    
+    product_data = product.dict()
+    product_data.pop("total_cost_som", None)
     
     db_product = models.Product(
-        **product.dict(),
-        **calc_results
+        **product_data,
+        **calc_results,
+        total_cost_som=kgs_total
     )
     db.add(db_product)
     db.commit()
@@ -104,6 +139,18 @@ def update_product(db: Session, product_id: int, product_update: schemas.Product
         calc_results = calculate_costs(current_data, settings)
         for key, value in calc_results.items():
             setattr(db_product, key, value)
+            
+    # Always recalculate KGS if its relevant fields changed
+    kgs_trigger_fields = ["price_cny", "delivery_usd_per_kg", "weight_kg"]
+    if any(field in update_data for field in kgs_trigger_fields) or "total_cost_som" not in update_data:
+        settings = get_settings(db)
+        current_kgs_data = {
+            "price_cny": db_product.price_cny,
+            "delivery_usd_per_kg": db_product.delivery_usd_per_kg,
+            "weight_kg": db_product.weight_kg,
+            "product_name": db_product.product_name
+        }
+        db_product.total_cost_som = calculate_kgs_costs(current_kgs_data, settings)
 
     db.commit()
     db.refresh(db_product)

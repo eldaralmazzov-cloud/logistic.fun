@@ -56,6 +56,11 @@ class ProductBase(BaseModel):
     size: Optional[str] = Field(None, description="Dimensions of the product")
     packaging_size: Optional[str] = Field(None, description="External packaging size")
 
+    # KGS Fields
+    price_cny: float = Field(0.0, description="Purchase price in CNY")
+    delivery_usd_per_kg: float = Field(0.0, description="Shipping cost per kg in USD")
+    total_cost_som: float = Field(0.0, description="Total cost calculated in KGS")
+
 class ProductCreate(ProductBase):
     pass
 
@@ -87,6 +92,10 @@ class ProductUpdate(BaseModel):
     estimated_arrival_date: Optional[datetime] = None
     actual_arrival_date: Optional[datetime] = None
     logistics_notes: Optional[str] = None
+    # KGS Updates
+    price_cny: Optional[float] = None
+    delivery_usd_per_kg: Optional[float] = None
+    total_cost_som: Optional[float] = None
 
 class ProductResponse(ProductBase):
     id: int

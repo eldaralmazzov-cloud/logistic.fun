@@ -79,6 +79,11 @@ class Product(Base):
     size = Column(String(100), nullable=True)
     packaging_size = Column(String(100), nullable=True)
     
+    # KGS Calculation Fields
+    price_cny = Column(Float, nullable=True, default=0.0)
+    delivery_usd_per_kg = Column(Float, nullable=True, default=0.0)
+    total_cost_som = Column(Float, nullable=True, default=0.0)
+    
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
