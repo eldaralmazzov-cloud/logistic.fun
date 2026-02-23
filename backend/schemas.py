@@ -54,6 +54,7 @@ class ProductBase(BaseModel):
     price: float = Field(0.0, description="Selling price (calculated or manual)")
     weight: Optional[float] = Field(None, description="Net weight of a single unit")
     size: Optional[str] = Field(None, description="Dimensions of the product")
+    packaging_size: Optional[str] = Field(None, description="External packaging size")
 
 class ProductCreate(ProductBase):
     pass
@@ -61,6 +62,7 @@ class ProductCreate(ProductBase):
 class ProductUpdate(BaseModel):
     product_name: Optional[str] = None
     supplier_name: Optional[str] = None
+    order_number: Optional[str] = None
     status: Optional[CargoStatus] = None
     payment_status: Optional[PaymentStatus] = None
     media_urls: Optional[List[str]] = None
@@ -68,6 +70,7 @@ class ProductUpdate(BaseModel):
     price: Optional[float] = None
     weight: Optional[float] = None
     size: Optional[str] = None
+    packaging_size: Optional[str] = None
     quantity: Optional[int] = None
     category: Optional[str] = None
     purchase_price: Optional[float] = None

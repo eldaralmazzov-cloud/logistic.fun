@@ -7,6 +7,17 @@ def get_settings(db: Session):
     settings = db.query(models.GlobalSettings).all()
     return {s.key: s.value for s in settings}
 
+def to_serializable(obj):
+    if isinstance(obj, datetime):
+        return obj.isoformat()
+    if hasattr(obj, "value"): # Handle Enums
+        return obj.value
+    if isinstance(obj, dict):
+        return {k: to_serializable(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [to_serializable(x) for x in obj]
+    return obj
+
 def calculate_costs(product_data: dict, settings: dict):
     # Default values from settings if not present
     customs_rate_kg = settings.get("customs_rate_kg", 2.5)
@@ -55,7 +66,7 @@ def create_product(db: Session, product: schemas.ProductCreate, user_id: int):
         user_id=user_id,
         product_id=db_product.id,
         action="Created Product",
-        details={"after": product.dict()}
+        details={"after": to_serializable(product.dict())}
     )
     db.add(log)
     db.commit()
@@ -73,7 +84,7 @@ def update_product(db: Session, product_id: int, product_update: schemas.Product
     if not db_product:
         return None
     
-    old_data = {c.name: getattr(db_product, c.name) for c in db_product.__table__.columns if not isinstance(getattr(db_product, c.name), datetime)}
+    old_data = {c.name: to_serializable(getattr(db_product, c.name)) for c in db_product.__table__.columns}
     
     update_data = product_update.dict(exclude_unset=True)
     for key, value in update_data.items():
@@ -98,7 +109,7 @@ def update_product(db: Session, product_id: int, product_update: schemas.Product
     db.refresh(db_product)
     
     # Audit log
-    new_data = {c.name: getattr(db_product, c.name) for c in db_product.__table__.columns if not isinstance(getattr(db_product, c.name), datetime)}
+    new_data = {c.name: to_serializable(getattr(db_product, c.name)) for c in db_product.__table__.columns}
     log = models.AuditLog(
         user_id=user_id,
         product_id=db_product.id,
@@ -115,7 +126,7 @@ def delete_product(db: Session, product_id: int, user_id: int):
         return False
     
     # Capture data for audit log before deletion
-    old_data = {c.name: getattr(db_product, c.name) for c in db_product.__table__.columns if not isinstance(getattr(db_product, c.name), datetime)}
+    old_data = {c.name: to_serializable(getattr(db_product, c.name)) for c in db_product.__table__.columns}
     
     db.delete(db_product)
     db.commit()

@@ -77,6 +77,7 @@ class Product(Base):
     price = Column(Float, nullable=False)
     weight = Column(Float, nullable=True)
     size = Column(String(100), nullable=True)
+    packaging_size = Column(String(100), nullable=True)
     
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

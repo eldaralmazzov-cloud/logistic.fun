@@ -10,7 +10,12 @@ router = APIRouter(prefix="/products", tags=["products"])
 def create_product(
     product: schemas.ProductCreate, 
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(dependencies.RoleChecker([models.UserRole.ADMIN, models.UserRole.MANAGER]))
+    current_user: models.User = Depends(dependencies.RoleChecker([
+        models.UserRole.ADMIN, 
+        models.UserRole.MANAGER, 
+        models.UserRole.LOGISTICS, 
+        models.UserRole.ACCOUNTANT
+    ]))
 ):
     return crud.create_product(db=db, product=product, user_id=current_user.id)
 
