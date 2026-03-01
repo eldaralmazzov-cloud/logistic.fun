@@ -97,6 +97,8 @@ class Product(Base):
     delivery_cost_kgs = Column(Float, nullable=True, default=0.0)
     service_fee = Column(Float, nullable=True, default=0.0)
     final_cost = Column(Float, nullable=True, default=0.0)
+    total_volume = Column(Float, nullable=True, default=0.0)
+    density = Column(Float, nullable=True, default=0.0)
 
     # Structured Data
     specifications = Column(JSON, nullable=True)

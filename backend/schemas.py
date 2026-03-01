@@ -121,6 +121,8 @@ class ProductResponse(ProductBase):
     delivery_cost_kgs: float
     service_fee: float
     final_cost: float
+    total_volume: float
+    density: float
 
     # Legacy Calculated Fields
     customs_cost: float

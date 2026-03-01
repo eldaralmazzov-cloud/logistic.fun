@@ -57,6 +57,24 @@ def recalculate_product_costs(product_obj: models.Product):
     # 6. Final Cost
     product_obj.final_cost = round(product_obj.product_cost_kgs + product_obj.delivery_cost_kgs + product_obj.service_fee, 2)
 
+    # 7. Total Volume (parsing packaging_size LxWxH in cm)
+    def parse_vol(size_str, places):
+        if not size_str or not places: return 0.0
+        try:
+            parts = [float(p) for p in size_str.lower().replace('*', 'x').replace(' ', '').split('x') if p]
+            if len(parts) >= 3:
+                return round((parts[0] * parts[1] * parts[2] * places) / 1_000_000.0, 4)
+        except: pass
+        return 0.0
+
+    product_obj.total_volume = parse_vol(product_obj.packaging_size, places_count)
+
+    # 8. Density (Total Weight / Total Volume)
+    if product_obj.total_volume and product_obj.total_volume > 0:
+        product_obj.density = round(product_obj.total_weight / product_obj.total_volume, 2)
+    else:
+        product_obj.density = 0.0
+
     # Legacy / Compatibility fields
     product_obj.total_cost_som = product_obj.final_cost # Map to existing field if needed
     product_obj.final_total_cost = product_obj.final_cost
