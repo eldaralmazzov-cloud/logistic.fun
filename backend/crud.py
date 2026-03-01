@@ -122,22 +122,6 @@ def update_product(db: Session, product_id: int, product_update: schemas.Product
     db.commit()
     
     return db_product
-
-    db.commit()
-    db.refresh(db_product)
-    
-    # Audit log
-    new_data = {c.name: to_serializable(getattr(db_product, c.name)) for c in db_product.__table__.columns}
-    log = models.AuditLog(
-        user_id=user_id,
-        product_id=db_product.id,
-        action="Updated Product",
-        details={"before": old_data, "after": new_data}
-    )
-    db.add(log)
-    db.commit()
-    
-    return db_product
 def delete_product(db: Session, product_id: int, user_id: int):
     db_product = get_product(db, product_id)
     if not db_product:
