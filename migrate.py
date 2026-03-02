@@ -17,7 +17,9 @@ def migrate():
         ("price", "FLOAT DEFAULT 0.0 NOT NULL"),
         ("weight", "FLOAT"),
         ("size", "VARCHAR(100)"),
-        ("packaging_size", "VARCHAR(100)")
+        ("packaging_size", "VARCHAR(100)"),
+        ("total_volume", "FLOAT DEFAULT 0.0"),
+        ("density", "FLOAT DEFAULT 0.0")
     ]
 
     for col_name, col_type in columns_to_add:

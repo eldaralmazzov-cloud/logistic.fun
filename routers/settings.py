@@ -9,7 +9,12 @@ router = APIRouter(prefix="/settings", tags=["settings"])
 @router.get("/", response_model=List[schemas.GlobalSettingsResponse])
 def get_settings(
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(dependencies.RoleChecker([models.UserRole.ADMIN]))
+    current_user: models.User = Depends(dependencies.RoleChecker([
+        models.UserRole.ADMIN,
+        models.UserRole.MANAGER,
+        models.UserRole.ACCOUNTANT,
+        models.UserRole.LOGISTICS
+    ]))
 ):
     return db.query(models.GlobalSettings).all()
 

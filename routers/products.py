@@ -27,19 +27,6 @@ def read_products(
     current_user: models.User = Depends(dependencies.get_current_active_user)
 ):
     products = crud.get_products(db, skip=skip, limit=limit)
-    
-    # RBAC logic: Filter fields for Accountant and Logistics
-    if current_user.role == models.UserRole.ACCOUNTANT:
-        # Accountant can't see logistics notes or tracking details (but can see financial fields)
-        # Note: In a production app, we would use different response schemas for each role.
-        # For this MVP, we will handle it in the frontend or use partial schemas.
-        # However, to be strict, we'd do it here.
-        pass
-    
-    if current_user.role == models.UserRole.LOGISTICS:
-        # Logistics can't see margin or financial profit data.
-        pass
-        
     return products
 
 @router.get("/{product_id}", response_model=schemas.ProductResponse)

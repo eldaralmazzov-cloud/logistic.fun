@@ -79,8 +79,31 @@ class Product(Base):
     size = Column(String(100), nullable=True)
     packaging_size = Column(String(100), nullable=True)
     
-    # KGS Calculation Fields
+    # Restructured Fields & Backend Calculations
+    # Input Fields
     price_cny = Column(Float, nullable=True, default=0.0)
+    cny_rate = Column(Float, nullable=True, default=0.0)
+    # quantity is already defined above
+    places_count = Column(Integer, nullable=True, default=0)
+    weight_per_box = Column(Float, nullable=True, default=0.0)
+    delivery_rate_usd_per_kg = Column(Float, nullable=True, default=0.0)
+    usd_rate = Column(Float, nullable=True, default=0.0)
+    service_percent = Column(Float, nullable=True, default=10.0)
+
+    # Calculated Fields
+    total_weight = Column(Float, nullable=True, default=0.0)
+    product_cost_kgs = Column(Float, nullable=True, default=0.0)
+    delivery_cost_usd = Column(Float, nullable=True, default=0.0)
+    delivery_cost_kgs = Column(Float, nullable=True, default=0.0)
+    service_fee = Column(Float, nullable=True, default=0.0)
+    final_cost = Column(Float, nullable=True, default=0.0)
+    total_volume = Column(Float, nullable=True, default=0.0)
+    density = Column(Float, nullable=True, default=0.0)
+
+    # Structured Data
+    specifications = Column(JSON, nullable=True)
+
+    # KGS Calculation Fields (Legacy - kept for compatibility temporarily)
     delivery_usd_per_kg = Column(Float, nullable=True, default=0.0)
     total_cost_som = Column(Float, nullable=True, default=0.0)
     
