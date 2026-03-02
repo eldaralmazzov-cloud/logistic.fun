@@ -14,11 +14,7 @@ app = FastAPI(
     version="1.0.0",
 )
 
-ALLOWED_ORIGINS = [
-    "https://logistic-fun.netlify.app",   # production Netlify frontend
-    "http://localhost:5173",              # local Vite dev
-    "http://localhost:3000",              # fallback local
-]
+ALLOWED_ORIGINS = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -36,8 +32,8 @@ app.include_router(upload_router.router)
 
 @app.on_event("startup")
 def startup_event():
-    # Run migrations to ensure DB is up to date
-    migrate()
+    # Run migrations manually or via script to avoid worker deadlocks
+    # migrate()
     
     db = SessionLocal()
     # Create seed users for different roles
