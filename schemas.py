@@ -134,25 +134,25 @@ class ProductUpdate(BaseModel):
 
 class ProductResponse(ProductBase):
     id: int
-    # Calculated Fields
-    total_weight: float
-    product_cost_kgs: float
-    delivery_cost_usd: float
-    delivery_cost_kgs: float
-    service_fee: float
-    final_cost: float
-    total_volume: float
-    density: float
+    # Calculated Fields (Optional because old records may have NULL)
+    total_weight: Optional[float] = 0.0
+    product_cost_kgs: Optional[float] = 0.0
+    delivery_cost_usd: Optional[float] = 0.0
+    delivery_cost_kgs: Optional[float] = 0.0
+    service_fee: Optional[float] = 0.0
+    final_cost: Optional[float] = 0.0
+    total_volume: Optional[float] = 0.0
+    density: Optional[float] = 0.0
 
-    # Legacy Calculated Fields
-    customs_cost: float
-    delivery_cost: float
-    final_total_cost: float
-    outstanding_balance: float
-    total_cost_som: float
+    # Legacy Calculated Fields (Optional because old records may have NULL)
+    customs_cost: Optional[float] = 0.0
+    delivery_cost: Optional[float] = 0.0
+    final_total_cost: Optional[float] = 0.0
+    outstanding_balance: Optional[float] = 0.0
+    total_cost_som: Optional[float] = 0.0
 
-    created_at: datetime
-    updated_at: datetime
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
     class Config:
         from_attributes = True
 
