@@ -71,6 +71,16 @@ class ProductBase(BaseModel):
 
     # Structured Data
     specifications: Optional[dict] = Field(None, description="Structured technical parameters")
+    
+    # Allow calculated fields to be passed (will be overwritten by backend)
+    total_weight: Optional[float] = None
+    product_cost_kgs: Optional[float] = None
+    delivery_cost_usd: Optional[float] = None
+    delivery_cost_kgs: Optional[float] = None
+    service_fee: Optional[float] = None
+    final_cost: Optional[float] = None
+    total_volume: Optional[float] = None
+    density: Optional[float] = None
 
 class ProductCreate(ProductBase):
     pass
@@ -111,6 +121,16 @@ class ProductUpdate(BaseModel):
     usd_rate: Optional[float] = Field(None, ge=0)
     service_percent: Optional[float] = Field(None, ge=0)
     specifications: Optional[dict] = None
+    
+    # Calculated Fields (Optional in update)
+    total_weight: Optional[float] = None
+    product_cost_kgs: Optional[float] = None
+    delivery_cost_usd: Optional[float] = None
+    delivery_cost_kgs: Optional[float] = None
+    service_fee: Optional[float] = None
+    final_cost: Optional[float] = None
+    total_volume: Optional[float] = None
+    density: Optional[float] = None
 
 class ProductResponse(ProductBase):
     id: int

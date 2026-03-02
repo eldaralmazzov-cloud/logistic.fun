@@ -32,11 +32,14 @@ app.include_router(upload_router.router)
 
 @app.on_event("startup")
 def startup_event():
+    print("STARTUP: Initializing application...")
     # Run migrations once on startup
     try:
+        print("STARTUP: Running migrations...")
         migrate()
+        print("STARTUP: Migrations completed.")
     except Exception as e:
-        print(f"Migration error on startup: {e}")
+        print(f"STARTUP ERROR: Migration failed: {e}")
     
     db = SessionLocal()
     # Create seed users for different roles
