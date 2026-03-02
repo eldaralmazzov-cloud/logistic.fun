@@ -7,9 +7,13 @@ def get_settings(db: Session):
     settings = db.query(models.GlobalSettings).all()
     return {s.key: s.value for s in settings}
 
+from decimal import Decimal
+
 def to_serializable(obj):
     if isinstance(obj, datetime):
         return obj.isoformat()
+    if isinstance(obj, Decimal):
+        return float(obj)
     if hasattr(obj, "value"): # Handle Enums
         return obj.value
     if isinstance(obj, dict):

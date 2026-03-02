@@ -31,7 +31,7 @@ class ProductBase(BaseModel):
     order_number: str = Field(..., description="Unique order identification number")
     category: Optional[str] = Field(None, description="Product category (e.g., Electronics, Furniture)")
     # Financial Fields (Legacy/Existing - kept for compatibility)
-    purchase_price: float = Field(..., description="Original purchase price per unit")
+    purchase_price: float = Field(0.0, description="Original purchase price per unit")
     currency: str = Field("USD", description="Currency code (e.g., USD, CNY)")
     exchange_rate: float = Field(1.0, description="Exchange rate at the time of purchase")
     margin_percent: float = Field(0.0, description="Target margin percentage")
