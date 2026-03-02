@@ -22,18 +22,26 @@ def to_serializable(obj):
         return [to_serializable(x) for x in obj]
     return obj
 
+import re
+
+def parse_vol(size_str, places):
+    if not size_str or not places: return 0.0
+    try:
+        # Find all numbers (including floats) in the string
+        numbers = [float(n) for n in re.findall(r"(\d+(?:\.\d+)?)", size_str.replace(',', '.'))]
+        if len(numbers) >= 3:
+            # Formula: (L * W * H * places) / 1,000,000 (converts cm³ to m³ if input is in cm)
+            # Default to first 3 numbers found
+            return round((numbers[0] * numbers[1] * numbers[2] * places) / 1_000_000.0, 4)
+    except Exception as e:
+        print(f"Error parsing volume from '{size_str}': {e}")
+    return 0.0
+
 def recalculate_product_costs(product_obj: models.Product):
     """
     Centralized logic to calculate derived values.
-    formula logic:
-    1. total_weight = places_count * weight_per_box
-    2. product_cost_kgs = price_cny * quantity * cny_rate
-    3. delivery_cost_usd = total_weight * delivery_rate_usd_per_kg
-    4. delivery_cost_kgs = delivery_cost_usd * usd_rate
-    5. service_fee = product_cost_kgs * (service_percent / 100)
-    6. final_cost = product_cost_kgs + delivery_cost_kgs + service_fee
     """
-    # Ensure values are not None (use 0.0 or default)
+    # Ensure values are not None
     price_cny = product_obj.price_cny or 0.0
     quantity = product_obj.quantity or 0
     cny_rate = product_obj.cny_rate or 0.0
@@ -61,17 +69,14 @@ def recalculate_product_costs(product_obj: models.Product):
     # 6. Final Cost
     product_obj.final_cost = round(product_obj.product_cost_kgs + product_obj.delivery_cost_kgs + product_obj.service_fee, 2)
 
-    # 7. Total Volume (parsing packaging_size LxWxH in cm)
-    def parse_vol(size_str, places):
-        if not size_str or not places: return 0.0
-        try:
-            parts = [float(p) for p in size_str.lower().replace('*', 'x').replace(' ', '').split('x') if p]
-            if len(parts) >= 3:
-                return round((parts[0] * parts[1] * parts[2] * places) / 1_000_000.0, 4)
-        except: pass
-        return 0.0
-
-    product_obj.total_volume = parse_vol(product_obj.packaging_size, places_count)
+    # 7. Total Volume
+    # Use packaging_size if available, otherwise fallback to existing total_volume if it was manually set
+    calc_vol = parse_vol(product_obj.packaging_size, places_count)
+    if calc_vol > 0:
+        product_obj.total_volume = calc_vol
+    elif product_obj.volume_m3 and not product_obj.total_volume:
+        # Fallback to legacy field only if total_volume is empty
+        product_obj.total_volume = product_obj.volume_m3
 
     # 8. Density (Total Weight / Total Volume)
     if product_obj.total_volume and product_obj.total_volume > 0:
@@ -80,9 +85,9 @@ def recalculate_product_costs(product_obj: models.Product):
         product_obj.density = 0.0
 
     # Legacy / Compatibility fields
-    product_obj.total_cost_som = product_obj.final_cost # Map to existing field if needed
+    product_obj.total_cost_som = product_obj.final_cost
     product_obj.final_total_cost = product_obj.final_cost
-    product_obj.outstanding_balance = product_obj.final_cost # Reset balance on total change? Usually yes.
+    product_obj.outstanding_balance = product_obj.final_cost
 
 def create_product(db: Session, product: schemas.ProductCreate, user_id: int):
     product_data = product.dict()
