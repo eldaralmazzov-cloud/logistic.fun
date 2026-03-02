@@ -30,9 +30,16 @@ def parse_vol(size_str, places):
         # Find all numbers (including floats) in the string
         numbers = [float(n) for n in re.findall(r"(\d+(?:\.\d+)?)", size_str.replace(',', '.'))]
         if len(numbers) >= 3:
-            # Formula: (L * W * H * places) / 1,000,000 (converts cm³ to m³ if input is in cm)
-            # Default to first 3 numbers found
-            return round((numbers[0] * numbers[1] * numbers[2] * places) / 1_000_000.0, 4)
+            # Smart Unit Detection:
+            # If the raw product is large (e.g. 40*40*40 = 64000), it's CM.
+            # If it's small (e.g. 0.4*0.4*0.4 = 0.064), it's Meters.
+            raw_box_vol = numbers[0] * numbers[1] * numbers[2]
+            
+            # 10 is a safe threshold (10x10x10cm = 1000cm³; 2x2x2m = 8m³)
+            if raw_box_vol > 10.0:
+                return round((raw_box_vol * places) / 1_000_000.0, 4)
+            else:
+                return round(raw_box_vol * places, 4)
     except Exception as e:
         print(f"Error parsing volume from '{size_str}': {e}")
     return 0.0
