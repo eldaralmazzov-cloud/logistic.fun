@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #080a0c;
+  --color-foreground: #ffffff;
+
+  --color-sidebar: #0a0e14;
+  --color-card: rgba(16, 20, 26, 0.6);
+  --color-primary: #00f2ff;
+  --color-primary-light: #0088ff;
+  --color-accent: rgba(255, 255, 255, 0.03);
+  --color-border: rgba(255, 255, 255, 0.08);
+
+  --color-success: #00ff9d;
+  --color-warning: #ff9f0a;
+  --color-error: #ff2d55;
+  --color-info: #00d2ff;
+
+  --shadow-premium: 0 0 20px rgba(0, 242, 255, 0.15);
+  --shadow-card: 0 8px 32px 0 rgba(0, 0, 0, 0.82);
+  --shadow-glow-teal: 0 0 15px rgba(0, 242, 255, 0.4);
+  --shadow-glow-rose: 0 0 15px rgba(255, 45, 85, 0.4);
+  --shadow-glow-emerald: 0 0 15px rgba(0, 255, 157, 0.4);
+  --shadow-glow-amber: 0 0 15px rgba(255, 159, 10, 0.4);
+
+  --radius-premium: 1.25rem;
+}
+
+@layer utilities {
+  .glass-morphism {
+    @apply bg-card backdrop-blur-xl border border-border;
+  }
+
+  .glass-sidebar {
+    @apply bg-sidebar/80 backdrop-blur-2xl border-r border-border;
+  }
+
+  .neon-border-teal {
+    @apply border-primary shadow-[var(--shadow-glow-teal)];
+  }
+
+  .neon-border-rose {
+    @apply border-error shadow-[var(--shadow-glow-rose)];
+  }
+
+  .neon-border-emerald {
+    @apply border-success shadow-[var(--shadow-glow-emerald)];
+  }
+
+  .neon-text-teal {
+    @apply text-primary;
+    filter: drop-shadow(0 0 8px rgba(0, 242, 255, 0.8));
+  }
+}
+
+@layer base {
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
