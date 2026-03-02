@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from database import engine, Base, SessionLocal
 import models, auth
 from routers import auth as auth_router, products as products_router, settings as settings_router, upload as upload_router
+from migrate import migrate
 
 # Create tables
 Base.metadata.create_all(bind=engine)
@@ -35,6 +36,9 @@ app.include_router(upload_router.router)
 
 @app.on_event("startup")
 def startup_event():
+    # Run migrations to ensure DB is up to date
+    migrate()
+    
     db = SessionLocal()
     # Create seed users for different roles
     seed_users = [
